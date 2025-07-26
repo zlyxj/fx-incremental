@@ -1,0 +1,105 @@
+<!doctype html>
+<html>
+    <head>
+        <title>f(x)增量</title>
+        <meta charset="utf-8">
+       <script>
+            MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]  
+              },
+              svg: {
+                fontCache: 'global'
+              }
+            };
+          </script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="src/break_eternity.js"></script>
+<script src="src/news.js"></script>
+<style>
+    body{
+        text-align:center;
+    }
+</style>
+<link rel="stylesheet" type="text/css" href="src/styles.css">
+    </head>
+    <body>
+        <span id="news" onclick="updateNews()">不滚动新闻</span>
+        <hr>
+        <span style="font-size:25px">$ f(x)= $<span id="fx"></span></span>
+        <br>
+        tickspeed:<span id="tick">1.00</span><br>
+        <button style="min-width:240px;height:35px" onclick="buyTick()">tickspeed$\times$1.1 Req:<span id="tickcost">1.00</span></button>
+        <div id="tabs">
+          <button class="tab" onclick="tab(1)">导数</button>
+          <button class="tab" onclick="tab(0)">关于</button>
+        </div>
+        <div id="tab1">
+          <span class='jax'>Tips:$f^{(n)}=(f^{(n)}_0+k_n)  \times 2^{\left \lfloor  \frac {k_n}{10}\right \rfloor}$</span>
+          <button onclick="maxAll()">全部最大(坏了)</button>
+          <table id="derivative" border="3">
+            <thead>
+              <tr>
+                <td></td> <td>$f^{(n)}$</td> <td>$f^{(n)}_0$</td>
+                <td>$k_n$</td> <td>$k_n\rightarrow k_n+1$</td>
+                <td>$k_n\rightarrow k_n+10$</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>$f'(x)$</td> <td id="f'1">$If$</td>
+                <td id="f0'1">$you$</td>
+                <td id="k1">$see$</td>
+                <td><a id="k1cost">$this$</a></td>
+                <td><a id="k1cost10">$message$</a></td>
+              </tr>
+              <tr>
+                <td>$f''(x)$</td> <td id="f'2">$the$</td>
+                <td id="f0'2">$game$</td> <td id="k2">$is$</td>
+                <td><a id="k2cost">$loading$</a></td><td ><a id="k2cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f'''(x)$</td> <td id="f'3"></td>
+                <td id="f0'3"></td> <td id="k3"></td>
+                <td><a id="k3cost"></a></td><td ><a id="k3cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f^{(4)}(x)$</td> <td id="f'4"></td>
+                <td id="f0'4"></td> <td id="k4"></td>
+                <td><a id="k4cost"></a></td><td ><a id="k4cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f^{(5)}(x)$</td> <td id="f'5"></td>
+                <td id="f0'5"></td> <td id="k5"></td>
+                <td><a id="k5cost"></a></td><td ><a id="k5cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f^{(6)}(x)$</td> <td id="f'6"></td>
+                <td id="f0'6"></td> <td id="k6"></td>
+                <td><a id="k6cost"></a></td><td ><a id="k6cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f^{(7)}(x)$</td> <td id="f'7"></td>
+                <td id="f0'7"></td> <td id="k7"></td>
+                <td><a id="k7cost"></a></td><td ><a id="k7cost10"></a></td>
+              </tr>
+              <tr>
+                <td>$f^{(8)}(x)$</td> <td id="f'8"></td>
+                <td id="f0'8"></td> <td id="k8"></td>
+                <td><a id="k8cost"></a></td><td ><a id="k8cost10"></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="tab0" class="hidden">
+          f(x)增量 0.1<br>
+          作者：增量游戏君<br>
+          本游戏使用了<a href="https://github.com/Patashu/break_eternity.js">break_eternity.js</a>以及
+          <a href="https://www.mathjax.org/">MathJax</a><br>
+          <a href="changelog.html">更新日志</a><br>
+          <button onclick="save()">手动保存</button>
+          <button onclick="hardReset()">硬重置</button>
+        </div>
+        <script src="src/main.js"></script>
+    </body>
+</html>
