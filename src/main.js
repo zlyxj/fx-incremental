@@ -276,3 +276,4 @@ function hardReset(){
 }
 setInterval(update,50);
 setInterval(save,5000);
+checkOldVersion();
