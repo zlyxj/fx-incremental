@@ -174,10 +174,10 @@ function checkOldVersion(){
                 new Upgrade(2,1e24,1e12),
                 new Upgrade(3,1e32,1e16),
                 new Upgrade(4,1e48,1e24),
-                new Upgrade(5,1e60,1e30),
+                new Upgrade(5,1e90,1e60),
                 new Upgrade(6,1e150,1e150),
                 new Upgrade(7,1e280,1e280),
-                new Upgrade(8,1e400,1e400)
+                new Upgrade(8,'1e400','1e400')
             ]
     }
     if(game.powers==undefined){
