@@ -29,20 +29,23 @@
         <span style="font-size:25px">$ f(x)= $<span id="fx"></span></span>
         <br>
         tickspeed:<span id="tick">1.00</span><br>
-        <button style="min-width:240px;height:35px" onclick="buyTick()">tickspeed$\times$1.1 Req:<span id="tickcost">1.00</span></button>
+        <button style="min-width:240px;height:35px" onclick="buyTick()">$\times$1.1 Req:<span id="tickcost">1.00</span></button>
+        <button style="min-width:50px;height:35px" onclick="maxTick()">最大</button>
         <div id="tabs">
           <button class="tab" onclick="tab(1)">导数</button>
+          <button class="tab" onclick="tab(2)">升级</button>
           <button class="tab" onclick="tab(0)">关于</button>
         </div>
         <div id="tab1">
-          <span class='jax'>Tips:$f^{(n)}=(f^{(n)}_0+k_n)  \times 2^{\left \lfloor  \frac {k_n}{10}\right \rfloor}$</span>
-          <button onclick="maxAll()">全部最大(坏了)</button>
+          <span>Tips:$f^{(n)}=(f^{(n)}_0+k_n)  \times 2^{\left \lfloor  \frac {k_n}{10}\right \rfloor}$</span>
+          <button onclick="maxAll()">全部最大</button>
           <table id="derivative" border="3">
             <thead>
               <tr>
                 <td></td> <td>$f^{(n)}$</td> <td>$f^{(n)}_0$</td>
                 <td>$k_n$</td> <td>$k_n\rightarrow k_n+1$</td>
                 <td>$k_n\rightarrow k_n+10$</td>
+                <td>$k_n\rightarrow k_{\mathrm{max}}$</td>
               </tr>
             </thead>
             <tbody>
@@ -52,53 +55,97 @@
                 <td id="k1">$see$</td>
                 <td><a id="k1cost">$this$</a></td>
                 <td><a id="k1cost10">$message$</a></td>
+                <td><a id="k1max"></a></td>
               </tr>
               <tr>
                 <td>$f''(x)$</td> <td id="f'2">$the$</td>
                 <td id="f0'2">$game$</td> <td id="k2">$is$</td>
                 <td><a id="k2cost">$loading$</a></td><td ><a id="k2cost10"></a></td>
+                <td><a id="k2max"></a></td>
               </tr>
               <tr>
-                <td>$f'''(x)$</td> <td id="f'3"></td>
+                <td>$f^{(3)}(x)$</td> <td id="f'3"></td>
                 <td id="f0'3"></td> <td id="k3"></td>
                 <td><a id="k3cost"></a></td><td ><a id="k3cost10"></a></td>
+                <td><a id="k3max"></a></td>
               </tr>
               <tr>
                 <td>$f^{(4)}(x)$</td> <td id="f'4"></td>
                 <td id="f0'4"></td> <td id="k4"></td>
                 <td><a id="k4cost"></a></td><td ><a id="k4cost10"></a></td>
+                <td><a id="k4max"></a></td>
               </tr>
               <tr>
                 <td>$f^{(5)}(x)$</td> <td id="f'5"></td>
                 <td id="f0'5"></td> <td id="k5"></td>
                 <td><a id="k5cost"></a></td><td ><a id="k5cost10"></a></td>
+                <td><a id="k5max"></a></td>
               </tr>
               <tr>
                 <td>$f^{(6)}(x)$</td> <td id="f'6"></td>
                 <td id="f0'6"></td> <td id="k6"></td>
                 <td><a id="k6cost"></a></td><td ><a id="k6cost10"></a></td>
+                <td><a id="k6max"></a></td>
               </tr>
               <tr>
                 <td>$f^{(7)}(x)$</td> <td id="f'7"></td>
                 <td id="f0'7"></td> <td id="k7"></td>
                 <td><a id="k7cost"></a></td><td ><a id="k7cost10"></a></td>
+                <td><a id="k7max"></a></td>
               </tr>
               <tr>
                 <td>$f^{(8)}(x)$</td> <td id="f'8"></td>
                 <td id="f0'8"></td> <td id="k8"></td>
                 <td><a id="k8cost"></a></td><td ><a id="k8cost10"></a></td>
+                <td><a id="k8max"></a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="tab2" class="hidden">
+          每次升级+0.05
+          <table>
+            <tbody>
+              <tr>
+                <td><button class="upgrade" onclick="buyUpg(1)">f'的值^<span id="upg1">1.00</span>
+                <br>Req:<span id="upg1cost">1.00×10<sup>18</sup></span></button></td>
+                <td><button class="upgrade" onclick="buyUpg(2)">f''的值^<span id="upg2">1.00</span>
+                <br>Req:<span id="upg2cost">1.00×10<sup>24</sup></span></button></td>
+                <td><button class="upgrade" onclick="buyUpg(3)">f<sup>(3)</sup>的值^<span id="upg3">1.00</span>
+                <br>Req:<span id="upg3cost">1.00×10<sup>32</sup></span></button></td>
+              </tr>
+              <tr>
+                <td><button class="upgrade" onclick="buyUpg(4)">f<sup>(4)</sup>的值^<span id="upg4">1.00</span>
+                <br>Req:<span id="upg4cost">1.00×10<sup>48</sup></span></button></td>
+                <td><button class="upgrade" onclick="buyUpg(5)">f<sup>(5)</sup>的值^<span id="upg5">1.00</span>
+                <br>Req:<span id="upg5cost">1.00×10<sup>60</sup></span></button></td>
+                <td><button class="upgrade" onclick="buyUpg(6)">f<sup>(6)</sup>的值^<span id="upg6">1.00</span>
+                <br>Req:<span id="upg6cost">1.00×10<sup>84</sup></span></button></td>
+              </tr>
+              <tr>
+                <td><button class="upgrade" onclick="buyUpg(7)">f<sup>(7)</sup>的值^<span id="upg7">1.00</span>
+                <br>Req:<span id="upg7cost">1.00×10<sup>120</sup></span></button></td>
+                <td><button class="upgrade" onclick="buyUpg(8)">f<sup>(8)</sup>的值^<span id="upg8">1.00</span>
+                <br>Req:<span id="upg8cost">1.00×10<sup>144</sup></span></button></td> 
               </tr>
             </tbody>
           </table>
         </div>
         <div id="tab0" class="hidden">
-          f(x)增量 0.1<br>
+          f(x)增量 0.1.1<br>
           作者：增量游戏君<br>
           本游戏使用了<a href="https://github.com/Patashu/break_eternity.js">break_eternity.js</a>以及
           <a href="https://www.mathjax.org/">MathJax</a><br>
           <a href="changelog.html">更新日志</a><br>
+          <button onclick="exportSave()">导出到文本框</button>
+          <button onclick="importSave()">从文本框导入</button><br>
           <button onclick="save()">手动保存</button>
           <button onclick="hardReset()">硬重置</button>
+          <br>
+          <textarea style="width:300px;height:210px" id="savearea"></textarea>
+        </div>
+        <div id="softcaps">
+          <p id="sc1" style="color:red">f'超过10<sup>60</sup>后将受到软上限限制！</p>
         </div>
         <script src="src/main.js"></script>
     </body>

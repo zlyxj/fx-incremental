@@ -1,11 +1,11 @@
 @font-face {
-  font-family: 'MonospaceTypewriter'; 
-  src: url('MonospaceTypewriter.ttf') format('truetype'); 
-  font-weight: normal; 
+  font-family: 'Inconsolata'; 
+  src: url('Inconsolata.ttf') format('truetype'); 
+  font-weight: 800; 
   font-style: normal;  
 }
 *{
-    font-family:'MonospaceTypewriter','Arial',sans-serif;
+    font-family:'Inconsolata','Arial',sans-serif;
 }
 .jax{
     font-family:serif;
@@ -16,6 +16,14 @@ button{
     :disabled{
         color:#aaaaaa
     }
+    .upgrade{
+        width:300px;
+        height:220px;
+    }
+}
+.upgrade{
+    width:150px;
+    height:110px;
 }
 button.tab{
     font-size:20px;
@@ -26,9 +34,9 @@ table{
     border:#000000;
     border-collapse:collapse;
     td{
-        width:135px;
+        width:145px;
         height:35px;
         font-size:12px
     }
 }
-div.hidden{display:none;}
+.hidden{display:none;}

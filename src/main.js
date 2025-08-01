@@ -9,6 +9,13 @@ class Deri{
     }
 
 }
+class Upgrade{
+    constructor(n,cost,scaling){
+        this.n=n;
+        this.cost=D(cost);
+        this.scaling=D(scaling);
+    }
+}
 const game0={
             fx:D(20),
             tick:D(0),
@@ -23,10 +30,21 @@ const game0={
                 new Deri(6,0,0,1e10,32),
                 new Deri(7,0,0,1e15,45),
                 new Deri(8,0,0,1e21,60)
-            ]
+            ],
+            upgrades:[
+                new Upgrade(1,1e18,1e9),
+                new Upgrade(2,1e24,1e12),
+                new Upgrade(3,1e32,1e16),
+                new Upgrade(4,1e48,1e24),
+                new Upgrade(5,1e90,1e60),
+                new Upgrade(6,1e150,1e150),
+                new Upgrade(7,1e280,1e280),
+                new Upgrade(8,'1e400','1e400')
+            ],
+            powers:[D(1),D(1),D(1),D(1),D(1),D(1),D(1),D(1)]
         }
 function tab(n){
-    for(var i=0;i<=1;i++)
+    for(var i=0;i<=2;i++)
         document.getElementById("tab"+i).className=(i==n)?"":"hidden";
 }
 function format(x){
@@ -34,9 +52,9 @@ function format(x){
     if(de.lessThan(0))return "-"+format(de.times(-1));
     if(de.equals(0))return "0.00"
     if(de.lt(0.01))return "("+format(de.pow(-1))+")<sup>-1</sup>";
-    if(de.lt(1e3))return Number(de).toFixed(2);
-    if(de.lt(1e6))return Math.round(Number(de)).toLocaleString();
-    if(de.lt('ee6'))return de.mantissa.toFixed(2)+" × 10<sup>"+
+    if(de.lt(1e3))return (Math.floor(Number(de)*100)/100).toFixed(2);
+    if(de.lt(1e6))return Math.floor(Number(de)).toLocaleString();
+    if(de.lt('ee6'))return (Math.floor(Number(de.mantissa)*100)/100).toFixed(2)+"×10<sup>"+
         Math.floor(Number(de.e)).toLocaleString()+"</sup>";
     if(de.lt('10^^4'))return '10<sup>'+format(x.log10())+"</sup>";
     if(de.lt('F1e6')){
@@ -46,12 +64,21 @@ function format(x){
             mag=mag.log10();
             layer=layer.plus(1);
         }
-        return format(mag)+'F'+floor(Number(layer));
+        return '(10^)^'+floor(Number(layer))+' '+format(mag);
     }
-    return "F"+format(de.slog());
+    return "10^^"+format(de.slog());
 }
 function deriupdate(d){
-        document.getElementById('f\''+d.n).innerHTML=format(d.f0.plus(d.k).times(D(2).pow(d.k.divideBy(10).floor())));
+    if(d.n==1 && d.f0.plus(d.k).times(D(2).pow(d.k.divideBy(10).floor())).pow(game.powers[d.n-1]).gt(1e60)){
+        var F=d.f0.plus(d.k).times(D(2).pow(d.k.divideBy(10).floor())).pow(game.powers[d.n-1]);
+        var x=F.log10();
+        x=x.minus(60);
+        x=x.times(0.3);
+        x=x.plus(60);
+        x=D(10).pow(x);
+        document.getElementById('f\'1').innerHTML=format(x)
+    }
+        else document.getElementById('f\''+d.n).innerHTML=format(d.f0.plus(d.k).times(D(2).pow(d.k.divideBy(10).floor())).pow(game.powers[d.n-1]));
         document.getElementById('f0\''+d.n).innerHTML=format(d.f0);
         document.getElementById('k'+d.n).innerHTML=format(d.k);
         document.getElementById('k'+d.n+'cost').innerHTML='Req:'+format(d.cost);
@@ -59,7 +86,15 @@ function deriupdate(d){
             .times(D(1).minus(d.scaling.pow(10))).divideBy(D(1).minus(d.scaling))
             /*等比数列求和 a(1-q^n)/(1-q)*/
         )
+        var deri=d;
+        var num;
+        if(game.fx.lte(0))num=new D(0);
+        else num=game.fx.divideBy(deri.cost).log(deri.scaling).plus(1).floor().max(0);
+        var cost=deri.scaling.pow((num.plus(-1).max(0))).times(deri.cost);
+        document.getElementById('k'+d.n+'max').innerHTML='Req:'+format(cost);
         document.getElementById('k'+d.n+'cost').style='color:'+
+        (d.cost.gt(game.fx)?'gray':'blue');
+        document.getElementById('k'+d.n+'max').style='color:'+
         (d.cost.gt(game.fx)?'gray':'blue');
         document.getElementById('k'+d.n+'cost10').style='color:'+
         ((d.cost
@@ -84,28 +119,73 @@ function buyk10(x){
     while(i--)
         buyk(x);
 }
+function buymax(x){
+    var deri=game.derivatives[x-1];
+    game.fx=game.fx.plus(1e-9);
+    var num=game.fx.divideBy(deri.cost).log(deri.scaling).plus(1).floor().max(0);
+    if(num.lte(0))return;
+    var cost=deri.scaling.pow((num.minus(1).max(0))).times(deri.cost);
+    game.fx=game.fx.minus(cost);
+    deri.k=deri.k.plus(num);
+    deri.cost=deri.cost.times(deri.scaling.pow(num));
+    game.derivatives[x-1]=deri;
+}
 function buyTick(){
     if(game.tickCost.gt(game.fx))return;
     game.fx=game.fx.minus(game.tickCost);
     game.tick=game.tick.plus(1);
     game.tickCost=game.tickCost.times(10);
 }
+function maxTick(){
+    var num=game.fx.plus(1e-9).log10().floor();
+    if(num.lt(game.tick))return;
+    game.tick=num.plus(1);
+    game.tickCost=D(10).pow(game.tick)
+    game.fx=game.fx.minus(D(10).pow(game.tick.plus(-1)));
+}
 for(var i=1;i<=8;i++){
     document.getElementById('k'+i+'cost').href="javascript:buyk("+i+")";
     document.getElementById('k'+i+'cost10').href="javascript:buyk10("+i+")";
+    document.getElementById('k'+i+'max').href="javascript:buymax("+i+")";
 }
 function save(){
     localStorage.fxIncremental=JSON.stringify(game);
 }
 function maxAll(){
-    window.alert("我还没做呢（狗头）");
+   maxTick();
+   for(var i=8;i>=1;i--)
+    buymax(i);
+}
+function buyUpg(x){
+    var upg=game.upgrades[x-1];
+    if(game.fx.gt(upg.cost)){
+        game.fx=game.fx.minus(upg.cost);
+        upg.cost=upg.cost.times(upg.scaling);
+        game.powers[x-1]=game.powers[x-1].plus(0.05);
+    }
 }
 function checkOldVersion(){
     if(game.tick==undefined)game.tick=D(0);
     if(game.tickmul==undefined)game.tickmul=D(1.1);
     if(game.tickCost==undefined)game.tickCost=D(1);
+    if(game.upgrades==undefined){
+        game.upgrades=[
+                new Upgrade(1,1e18,1e9),
+                new Upgrade(2,1e24,1e12),
+                new Upgrade(3,1e32,1e16),
+                new Upgrade(4,1e48,1e24),
+                new Upgrade(5,1e60,1e30),
+                new Upgrade(6,1e150,1e150),
+                new Upgrade(7,1e280,1e280),
+                new Upgrade(8,1e400,1e400)
+            ]
+    }
+    if(game.powers==undefined){
+        game.powers=[D(1),D(1),D(1),D(1),D(1),D(1),D(1),D(1)];
+    }
 }
 function init(){
+    checkOldVersion();
     if(localStorage.fxIncremental!=undefined){
         var save=localStorage.fxIncremental;
         var _game=JSON.parse(save);
@@ -121,6 +201,12 @@ function init(){
             deri.cost=D(deri.cost);
             deri.scaling=D(deri.scaling);
             _game.derivatives[i]=deri;
+        }
+        for(var i=0;i<8;i++){
+            var upg=_game.upgrades[i];
+            upg.cost=D(upg.cost);
+            upg.scaling=D(upg.scaling);
+            _game.powers[i]=D(_game.powers[i]);
         }game=_game;
     }
 }
@@ -135,14 +221,38 @@ function update(){
     for(var i=0;i<8;i++){
         const deri=game.derivatives[i];
         deriupdate(deri);
-        f[i]=deri.f0.plus(deri.k).times(D(2).pow(deri.k.divideBy(10).floor()));
+        f[i]=deri.f0.plus(deri.k).times(D(2).pow(deri.k.divideBy(10).floor())).pow(game.powers[i]);
     }
-    game.fx=game.fx.plus(f[0].times(Dt));
+    document.getElementById('sc1').style="color:red"+((f[0].gt(1e60))?"":";display:none");
+    if(f[0].gt(1e60)){
+        var x=f[0].log10();
+        x=x.minus(60);
+        x=x.times(0.3);
+        x=x.plus(60);
+        x=D(10).pow(x);
+        game.fx=game.fx.plus(x.times(Dt));
+    }
+    else game.fx=game.fx.plus(f[0].times(Dt));
     document.getElementById("fx").innerHTML=format(game.fx);
     for(var i=1;i<8;i++)
         game.derivatives[i-1].f0=game.derivatives[i-1].f0.plus(
         f[i].times(Dt));
-    
+    for(var i=1;i<=8;i++){
+        document.getElementById('upg'+i).innerHTML=format(game.powers[i-1]);
+        document.getElementById('upg'+i+'cost').innerHTML=format(game.upgrades[i-1].cost);
+    }
+}
+function exportSave(){
+    var Save=btoa(JSON.stringify(game));
+    document.getElementById("savearea").value=Save;
+}
+function importSave(){
+    var Save=document.getElementById("savearea").value;
+    if(window.confirm("要导入存档吗？")){
+        game=JSON.parse(atob(Save));
+        save();
+        init();
+    }
 }
 function hardReset(){
     var text=[
